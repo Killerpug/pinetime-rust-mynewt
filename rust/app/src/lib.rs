@@ -137,9 +137,9 @@ extern "C" fn main() -> ! {  //  Declare extern "C" because it will be called by
         .expect("CHIP8 fail");
     
     let boot_bin = include_bytes!("update_bootl.elf.bin");              //load bootloader into memory binary.
-    console::dump(boot_bin, 16);
+    console::dump(boot_bin.as_ptr(), 16);
     console::flush();
-    
+
     //  Main event loop
     loop {                            //  Loop forever...
         os::eventq_run(               //  Processing events...
