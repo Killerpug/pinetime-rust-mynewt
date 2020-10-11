@@ -59,8 +59,7 @@ use mynewt::{
     sys::console,           //  Import Mynewt Console API
 };
 
-use heapless::consts::*;
-use heapless::{String, Vec};
+
 //  Select the touch handler depending on the options in `../Cargo.toml`
 #[cfg(feature = "ui_app")]      //  If druid UI app is enabled...
 use ui::handle_touch;           //  Use the touch handler from druid UI app
@@ -138,7 +137,10 @@ extern "C" fn main() -> ! {  //  Declare extern "C" because it will be called by
         .expect("CHIP8 fail");
     
     let boot_bin = include_bytes!("update_bootl.elf.bin");              //load bootloader into memory binary.
-  //  Main event loop
+    console::dump(boot_bin, 16);
+    console::flush();
+    
+    //  Main event loop
     loop {                            //  Loop forever...
         os::eventq_run(               //  Processing events...
             os::eventq_dflt_get()     //  From default event queue.
