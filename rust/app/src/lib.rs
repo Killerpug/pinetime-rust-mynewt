@@ -136,10 +136,10 @@ extern "C" fn main() -> ! {  //  Declare extern "C" because it will be called by
     chip8::on_start()
         .expect("CHIP8 fail");
     
-    let boot_bin_first = include_bytes!("update_bootl.elf.bin");              //load bootloader into memory binary.
-    let boot_bin_last = &boot_bin_first[boot_bin.len()-16] as *const u8;     // last 16 bytes of the 23356
+    let boot_bin_first = include_bytes!("update_bootl.elf.bin");                     //load bootloader into memory binary.
+    let boot_bin_last = &boot_bin_first[boot_bin_first.len()-16] as *const u8;     // last 16 bytes of the file
     console::dump(boot_bin_first.as_ptr(), 16);
-    console::dump(boot_bin_last.as_ptr(), 16);
+    console::dump(boot_bin_last, 16);
     console::flush();
 
     //  Main event loop
