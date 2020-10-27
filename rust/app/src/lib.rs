@@ -154,19 +154,17 @@ extern "C" fn main() -> ! {  //  Declare extern "C" because it will be called by
     let sector_count = boot_bin_first.len()/4096;                                    //  Count number of sectors(4 KB) needed to fit the bootloader
     for s in 0..sector_count {
         let working_sector = sector_count*4096;
-        extern {
-            hal_flash_erase(  //  Erase...
-                0,            //  Internal Flash ROM
-                (uint32_t) 0x00008000 + working_sector,  //  At FLASH_AREA_IMAGE_0
-                0x1000         //  Assume that we erase an entire page
-            );
-            hal_flash_write(  //  Write...
-                0,            //  Internal Flash ROM
-                (uint32_t) 0x00008000 + working_sector,  //  To the FLASH_AREA_IMAGE_0
-                (void *) &boot_bin_first[working_sector], //  From the bootloader
-                0x1000         //  Assume that we copy an entire page
-            );
-            }
+        hal_flash_erase(  //  Erase...
+            0,            //  Internal Flash ROM
+            (uint32_t) 0x00008000 + working_sector,  //  At FLASH_AREA_IMAGE_0
+            0x1000         //  Assume that we erase an entire page
+        );
+        hal_flash_write(  //  Write...
+            0,            //  Internal Flash ROM
+            (uint32_t) 0x00008000 + working_sector,  //  To the FLASH_AREA_IMAGE_0
+            (void *) &boot_bin_first[working_sector], //  From the bootloader
+            0x1000         //  Assume that we copy an entire page
+        );
     }
 
     //  Main event loop
