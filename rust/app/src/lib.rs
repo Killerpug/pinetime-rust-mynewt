@@ -28,6 +28,11 @@
 extern crate cortex_m;                  //  Declare the external library `cortex_m`
 extern crate mynewt;                    //  Declare the Mynewt library
 extern crate macros as mynewt_macros;   //  Declare the Mynewt Procedural Macros library
+//  For interaction with flash
+extern {
+    hal_flash_erase(flash_id: u8, address: u32, num_bytes: u32) -> i32;
+    hal_flash_write(flash_id: u8, address: u32, src: *core::ffi::c_void, num_bytes: u32) -> i32;
+}
 
 //  Declare the modules in our application
 mod app_network;    //  Declare `app_network.rs` as Rust module `app_network` for Application Network functions
