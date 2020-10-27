@@ -136,11 +136,33 @@ extern "C" fn main() -> ! {  //  Declare extern "C" because it will be called by
     chip8::on_start()
         .expect("CHIP8 fail");
     
-    let boot_bin_first = include_bytes!("update_bootl.elf.bin");                     //load bootloader into memory binary.
-    let boot_bin_last = &boot_bin_first[boot_bin_first.len()-16] as *const u8;     // last 16 bytes of the file
+    //  Loading bootloader into memory
+    let boot_bin_first = include_bytes!("update_bootl.elf.bin");                     //  Load bootloader into memory binary.
+    let boot_bin_last = &boot_bin_first[boot_bin_first.len()-16] as *const u8;       //  Points to Lasts 16 bytes of the file
+
+    //  Logging first and last 16 bytes of loaded binary with semihosting
     console::dump(boot_bin_first.as_ptr(), 16);
     console::dump(boot_bin_last, 16);
-    console::flush();
+    console::flush();   
+
+    //  Writing bootloader into flash 
+    let sector_count = boot_bin_first.len()/4096;                                    //  Count number of sectors(4 KB) needed to fit the bootloader
+    for s in 0..sector_count {
+        let working_sector = sector_count*4096;
+        extern {
+            hal_flash_erase(  //  Erase...
+                0,            //  Internal Flash ROM
+                (uint32_t) 0x00008000 + working_sector,  //  At FLASH_AREA_IMAGE_0
+                0x1000         //  Assume that we erase an entire page
+            );
+            hal_flash_write(  //  Write...
+                0,            //  Internal Flash ROM
+                (uint32_t) 0x00008000 + working_sector,  //  To the FLASH_AREA_IMAGE_0
+                (void *) &boot_bin_first[working_sector], //  From the bootloader
+                0x1000         //  Assume that we copy an entire page
+            );
+            }
+    }
 
     //  Main event loop
     loop {                            //  Loop forever...
